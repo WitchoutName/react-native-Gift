@@ -6,7 +6,7 @@ const authUrl = "auth/";
 const tokenKey = "token";
 
 getAuthToken().then((t) => {
-  api.setAuthToken(t);
+  api.setAuthToken(t || "15b43911ba720699723f324549de92df27072f94");
 });
 
 async function passwordToHash(password, user) {

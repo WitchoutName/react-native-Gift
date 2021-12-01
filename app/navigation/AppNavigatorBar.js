@@ -1,14 +1,23 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+
+import ComposeIcon from "../components/common/ComposeIcon";
 import Color from "../classes/Color";
 
+const BottomIcon = ({ icon, color }) => (
+  <View style={styles.bottomIcon}>{icon(color)}</View>
+);
+
 const tabIcons = [
-  (color) => <FontAwesome5 name="list" size={26} color={color} />,
   (color) => <FontAwesome5 name="user-alt" size={24} color={color} />,
   (color) => <FontAwesome5 name="user-friends" size={24} color={color} />,
+  (color) => <FontAwesome5 name="list" size={26} color={color} />,
   (color) => <FontAwesome5 name="user-circle" size={28} color={color} />,
-];
+  (color) => <ComposeIcon name="notifications" size={28} color={color} />,
+].map((x) => {
+  return (color) => <BottomIcon icon={x} color={color} />;
+});
 
 export default function AppNavigatorBar({
   state,
@@ -91,6 +100,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: Color.lightGray,
   },
   innerItem: {
     flex: 1,
@@ -98,5 +108,11 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     paddingVertical: 10,
+  },
+  bottomIcon: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

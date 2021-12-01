@@ -1,22 +1,8 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 
-import * as Icons from "@expo/vector-icons";
 import Color from "../../classes/Color";
-
-const iconSets = {
-  delete: { set: "MaterialCommunityIcons", name: "close-thick" },
-  edit: { set: "MaterialIcons" },
-};
-
-function composeIcon({ name, color, size }) {
-  const iconSet = iconSets[name];
-  if (iconSet) {
-    const Component = Icons[iconSet.set];
-    return <Component name={iconSet.name || name} color={color} size={size} />;
-  }
-  return null;
-}
+import ComposeIcon from "./ComposeIcon";
 
 const IconButton = (props) => {
   // console.log(props.icon);
@@ -34,7 +20,11 @@ const IconButton = (props) => {
         },
       }}
     >
-      {composeIcon(props.icon)}
+      <ComposeIcon
+        name={props.icon.name}
+        color={props.icon.color}
+        size={props.icon.size}
+      />
     </TouchableOpacity>
   );
 };

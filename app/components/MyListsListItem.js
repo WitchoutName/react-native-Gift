@@ -11,6 +11,7 @@ import Color from "../classes/Color";
 
 import { getUserImage } from "../services/userService";
 import IconButton from "./common/IconButton";
+import Listicon from "./common/ListIcon";
 
 const MyListsListItem = ({
   item,
@@ -23,6 +24,7 @@ const MyListsListItem = ({
       onPress={() => onActivateList(item.id)}
       style={[styles.item]}
     >
+      <Listicon url={item.icon} />
       <Text numberOfLines={1} style={styles.text}>
         {item.title}
       </Text>
@@ -44,10 +46,10 @@ const MyListsListItem = ({
 
 const styles = StyleSheet.create({
   item: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
     marginHorizontal: 10,
-    borderWidth: 1.5,
+    borderWidth: 1.2,
     borderColor: Color.primaryOrange,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -56,6 +58,7 @@ const styles = StyleSheet.create({
   text: {
     flex: 8,
     fontSize: 16,
+    marginLeft: 8,
   },
   leave: {
     margin: 0,
