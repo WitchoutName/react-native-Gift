@@ -6,7 +6,7 @@ const authUrl = "auth/";
 const tokenKey = "token";
 
 getAuthToken().then((t) => {
-  api.setAuthToken(t || "15b43911ba720699723f324549de92df27072f94");
+  api.setAuthToken(t);
 });
 
 async function passwordToHash(password, user) {
@@ -61,9 +61,9 @@ async function setAuthToken(authToken) {
 
 export async function getUser() {
   try {
-    const response = await api.client.post(authUrl + "get-user/");
-    //console.log(response);
-    return response.data;
+    const response = await api.client.get(authUrl + "get-user/");
+    // console.log(response);
+    return response;
   } catch (error) {
     return null;
   }

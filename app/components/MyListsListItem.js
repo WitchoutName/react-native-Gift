@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -8,10 +8,12 @@ import {
   Image,
 } from "react-native";
 import Color from "../classes/Color";
+import { useNavigation } from "@react-navigation/native";
 
 import { getUserImage } from "../services/userService";
 import IconButton from "./common/IconButton";
-import Listicon from "./common/ListIcon";
+import UrlIcon from "./UrlIcon";
+import appContext from "../context/appContext";
 
 const MyListsListItem = ({
   item,
@@ -19,12 +21,19 @@ const MyListsListItem = ({
   onDeleteList,
   onEditList,
 }) => {
+  const ctx = useContext(appContext);
+  const icon =
+    ctx.theme.listIcons.filter((i) => i.id == item.icon)[0] ||
+    ctx.theme.listIcons[0];
+  const color =
+    ctx.theme.themeColors.filter((i) => i.id == item.theme_color)[0] ||
+    ctx.theme.themeColors[0];
   return (
     <TouchableOpacity
       onPress={() => onActivateList(item.id)}
       style={[styles.item]}
     >
-      <Listicon url={item.icon} />
+      <UrlIcon icon={icon} color={color.hex} size={32} />
       <Text numberOfLines={1} style={styles.text}>
         {item.title}
       </Text>

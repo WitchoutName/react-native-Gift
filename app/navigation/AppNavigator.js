@@ -3,7 +3,7 @@ import { Platform, StatusBar, View, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import AppNavigatorBar from "./AppNavigatorBar";
-import MyListsScreen from "./../screens/MyListsScreen";
+import { MyListsNavigator } from "./MainNavigators";
 import OthersListsScreen from "./../screens/OthersListsScreen";
 import CatalogScreen from "./../screens/CatalogScreen";
 import ProfileScreen from "./../screens/ProfileScreen";
@@ -13,21 +13,19 @@ const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => (
   <Tab.Navigator
-    sceneContainerStyle={{ backgroundColor: Color.lighterGray }}
     screenOptions={{
-      headerStyle: {
-        backgroundColor: Color.primaryOrange,
-        height: 65,
-      },
-      headerTitleAlign: "center",
-      headerTitleStyle: {
-        color: Color.lighterGray,
-      },
+      headerShown: false,
+      tabBarHideOnKeyboard: true,
+      tabBarStyle: [{ display: "flex" }],
     }}
     tabBar={(props) => <AppNavigatorBar {...props} />}
   >
-    <Tab.Screen name="My Lists" component={MyListsScreen} />
-    <Tab.Screen name="Others Lists" component={OthersListsScreen} />
+    <Tab.Screen
+      name="myLists"
+      component={MyListsNavigator}
+      options={{ title: "My lists" }}
+    />
+    {/* <Tab.Screen name="Others Lists" component={OthersListsScreen} /> */}
     <Tab.Screen name="Catalog" component={CatalogScreen} />
     <Tab.Screen name="Profile" component={ProfileScreen} />
     <Tab.Screen name="Activity" component={ProfileScreen} />

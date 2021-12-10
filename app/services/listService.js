@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "./httpService";
 import cache from "./cacheService";
 
-const gListUrl = "api/user/glist/";
+const gListUrl = "api/gift-list/";
 const listKey = "activeList";
 
 async function setActiveList(activeList) {
@@ -32,7 +32,7 @@ export async function getList(id) {
   return response;
 }
 
-export async function postList(list) {
+export async function createList(list) {
   const response = await api.client.post(gListUrl, { ...list });
   return response;
 }
@@ -60,7 +60,7 @@ export async function deleteList(id) {
 export default {
   getLists,
   getList,
-  postList,
+  createList,
   putList,
   joinList,
   leaveList,

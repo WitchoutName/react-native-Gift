@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Dimensions } from "react-native";
 import VirtualizedList from "./common/VirtualizedList";
+import appContext from "../context/appContext";
 const screenWidth = Dimensions.get("window").width;
 
 const separator = () => <View style={{ height: 10 }}></View>;
 
 const Listslist = ({ renderItem, data }) => {
+  const ctx = useContext(appContext);
+  const [refreshing, setRefreshing] = useState(false);
   return (
     <View style={[styles.scrollBox]}>
       <VirtualizedList>
@@ -20,14 +23,11 @@ const Listslist = ({ renderItem, data }) => {
           maxToRenderPerBatch={10}
           removeClippedSubviews={true}
           windowSize={10}
-          keyExtractor={(i) => i.id.toString()}
-          //   refreshing={refreshing}
-          //   onRefresh={() => {
-          //     list.id &&
-          //       api.list.getList(list.id).then(({ data: l }) => {
-          //         setList(l);
-          //       });
-          //   }}
+          keyExtractor={(i) => {
+            return `${i.id}`;
+          }}
+          refreshing={refreshing}
+          onRefresh={() => ctx.listMethods.getLists()}
         />
       </VirtualizedList>
     </View>

@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import Color from "../classes/Color";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 
-const Listslistbutton = ({ title, onPress }) => {
+import Color from "../../classes/Color";
+
+const AppButton = ({ title, onPress }) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.touch}>
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1.5,
     borderColor: Color.successGreen,
-    padding: 20,
+    padding: 10,
     marginTop: 10,
   },
   text: {
@@ -26,4 +27,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Listslistbutton;
+export default AppButton;

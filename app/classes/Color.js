@@ -7,4 +7,5 @@ export default {
   successGreen: "#58c954",
   white: "white",
   black: "black",
+  red: "#D94F4F",
 };

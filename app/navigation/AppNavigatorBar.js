@@ -1,6 +1,13 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useKeyboard } from "@react-native-community/hooks";
 
 import ComposeIcon from "../components/common/ComposeIcon";
 import Color from "../classes/Color";
@@ -19,79 +26,87 @@ const tabIcons = [
   return (color) => <BottomIcon icon={x} color={color} />;
 });
 
-export default function AppNavigatorBar({
-  state,
-  descriptors,
-  navigation,
-  options,
-}) {
+export default function AppNavigatorBar({ state, descriptors, navigation }) {
+  const [active, setActive] = useState(true);
+  const keyboard = useKeyboard();
+
+  // useEffect(() => {
+  //   Keyboard.addListener("keyboardDidHide", () => setActive(true));
+  //   Keyboard.addListener("keyboardWillShow", () => setActive(false));
+  //   return () => {
+  //     Keyboard.removeListener("keyboardDidHide");
+  //     Keyboard.removeListener("keyboardWillShow");
+  //   };
+  // });
   return (
-    <View style={styles.container}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const label =
-          options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-            ? options.title
-            : route.name;
+    !keyboard.keyboardShown && (
+      <View style={styles.container}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const label =
+            options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+              ? options.title
+              : route.name;
 
-        const isFocused = state.index === index;
+          const isFocused = state.index === index;
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: "tabPress",
-            target: route.key,
-            canPreventDefault: true,
-          });
+          const onPress = () => {
+            const event = navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
 
-          if (!isFocused && !event.defaultPrevented) {
-            // The `merge: true` option makes sure that the params inside the tab screen are preserved
-            navigation.navigate({ name: route.name, merge: true });
+            if (!isFocused && !event.defaultPrevented) {
+              // The `merge: true` option makes sure that the params inside the tab screen are preserved
+              navigation.navigate({ name: route.name, merge: true });
+            }
+          };
+
+          const onLongPress = () => {
+            navigation.emit({
+              type: "tabLongPress",
+              target: route.key,
+            });
+          };
+
+          let additionalStyle = {};
+          if (isFocused) {
+            additionalStyle["backgroundColor"] = Color.primaryOrange;
+            additionalStyle["borderTopLeftRadius"] = index === 0 ? 10 : 10;
+            additionalStyle["borderTopRightRadius"] =
+              index === state.routes.length - 1 ? 10 : 10;
+            additionalStyle["height"] = "125%";
           }
-        };
 
-        const onLongPress = () => {
-          navigation.emit({
-            type: "tabLongPress",
-            target: route.key,
-          });
-        };
-
-        let additionalStyle = {};
-        if (isFocused) {
-          additionalStyle["backgroundColor"] = Color.primaryOrange;
-          additionalStyle["borderTopLeftRadius"] = index === 0 ? 10 : 10;
-          additionalStyle["borderTopRightRadius"] =
-            index === state.routes.length - 1 ? 10 : 10;
-          additionalStyle["height"] = "125%";
-        }
-
-        return (
-          <TouchableWithoutFeedback
-            key={index}
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
-            onPress={onPress}
-            onLongPress={onLongPress}
-          >
-            <View style={[styles.innerItem, additionalStyle]}>
-              {tabIcons[index](isFocused ? Color.white : Color.darkGray)}
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: isFocused ? Color.white : Color.darkGray,
-                }}
-              >
-                {label}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        );
-      })}
-    </View>
+          return (
+            <TouchableWithoutFeedback
+              key={index}
+              accessibilityRole="button"
+              accessibilityState={isFocused ? { selected: true } : {}}
+              accessibilityLabel={options.tabBarAccessibilityLabel}
+              testID={options.tabBarTestID}
+              onPress={onPress}
+              onLongPress={onLongPress}
+            >
+              <View style={[styles.innerItem, additionalStyle]}>
+                {tabIcons[index](isFocused ? Color.white : Color.darkGray)}
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: isFocused ? Color.white : Color.darkGray,
+                  }}
+                >
+                  {label}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          );
+        })}
+      </View>
+    )
   );
 }
 
