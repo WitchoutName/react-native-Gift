@@ -6,9 +6,7 @@ const screenWidth = Dimensions.get("window").width;
 
 const separator = () => <View style={{ height: 10 }}></View>;
 
-const Listslist = ({ renderItem, data }) => {
-  const ctx = useContext(appContext);
-  const [refreshing, setRefreshing] = useState(false);
+const Listslist = ({ renderItem, data, ListEmptyComponent }) => {
   return (
     <View style={[styles.scrollBox]}>
       <VirtualizedList>
@@ -26,8 +24,7 @@ const Listslist = ({ renderItem, data }) => {
           keyExtractor={(i) => {
             return `${i.id}`;
           }}
-          refreshing={refreshing}
-          onRefresh={() => ctx.listMethods.getLists()}
+          ListEmptyComponent={ListEmptyComponent}
         />
       </VirtualizedList>
     </View>

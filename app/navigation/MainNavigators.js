@@ -29,11 +29,26 @@ export const MyListsNavigator = () => (
     }}
   >
     <MyListsStack.Screen name="My Lists" component={MylistsScreen} />
-    <MyListsStack.Screen name="Create List" component={Createlistscreen} />
+    <MyListsStack.Screen
+      name="manageList"
+      component={Createlistscreen}
+      options={({ route }) => ({
+        title: (route.params.mode == "edit" ? "Edit" : "Create new") + " list",
+      })}
+    />
     <MyListsStack.Screen
       name="List"
       component={ListScreen}
-      options={({ route }) => ({ title: route.params.title })}
+      options={({ route }) => {
+        return {
+          title: route.params.title,
+          headerStyle: {
+            backgroundColor: route.params.theme_color.hex,
+            borderWidth: 0,
+          },
+          headerTransparent: true,
+        };
+      }}
     />
   </MyListsStack.Navigator>
 );

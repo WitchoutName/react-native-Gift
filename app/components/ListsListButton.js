@@ -2,10 +2,10 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Color from "../classes/Color";
 
-const Listslistbutton = ({ title, onPress }) => {
+const Listslistbutton = ({ title, onPress, style }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={styles.touch}>
+    <TouchableOpacity onPress={onPress} style={style}>
+      <View style={[styles.touch, {}]}>
         <Text style={styles.text}>{title}</Text>
       </View>
     </TouchableOpacity>

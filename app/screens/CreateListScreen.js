@@ -17,26 +17,48 @@ const validationSchema = Yup.object().shape({
   color: Yup.object().required().nullable().label("Color"),
 });
 
-const Createlistscreen = () => {
+const Createlistscreen = ({ navigation, route }) => {
   const ctx = useContext(appContext);
-  const [color, setColor] = useState(ctx.theme.themeColors[0].hex);
+
+  const isEditMode = route.params.mode == "edit";
+  const list = isEditMode
+    ? ctx.lists.filter((l) => l.id == route.params.id)[0]
+    : {};
+  const initialValues = {
+    title: isEditMode ? list.title : "",
+    color: isEditMode
+      ? list.theme_color
+      : ctx.theme.themeColors[0] || { id: 1 },
+    icon: isEditMode ? list.icon : ctx.theme.listIcons[0] || { id: 1 },
+  };
+
+  const [color, setColor] = useState(
+    isEditMode
+      ? list.theme_color.hex
+      : ctx.theme.themeColors[0]
+      ? ctx.theme.themeColors[0].hex
+      : "#B76E5F"
+  );
 
   const handleOnSubmit = async (values, { setFieldError }) => {
-    const { data, status } = await ctx.listMethods.createList({
+    const nonEditableAttrs = isEditMode ? { id: list.id } : {};
+    const { data, status } = await ctx.listMethods.manageList({
       title: values.title,
       icon: values.icon.id,
       theme_color: values.color.id,
+      ...nonEditableAttrs,
     });
     if (status === 400)
       Object.keys(data.errors).map((x) => {
         setFieldError(x, data.errors[x]);
       });
+    else navigation.goBack();
   };
 
   return (
     <View style={styles.form}>
       <AppForm
-        initialValues={{ title: "", icon: { id: 1 }, color: { id: 1 } }}
+        initialValues={initialValues}
         onSubmit={handleOnSubmit}
         enableReinitialize
         validationSchema={validationSchema}
@@ -54,7 +76,7 @@ const Createlistscreen = () => {
           setColor={setColor}
         />
         <FormIconPicker items={ctx.theme.listIcons} name="icon" color={color} />
-        <SubmitButton title="Create" />
+        <SubmitButton title={isEditMode ? "Update" : "Create"} />
       </AppForm>
     </View>
   );

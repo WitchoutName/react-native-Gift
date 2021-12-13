@@ -15,25 +15,12 @@ import IconButton from "./common/IconButton";
 import UrlIcon from "./UrlIcon";
 import appContext from "../context/appContext";
 
-const MyListsListItem = ({
-  item,
-  onActivateList,
-  onDeleteList,
-  onEditList,
-}) => {
+const MyListsListItem = ({ item, onActivate, onDelete, onEdit }) => {
   const ctx = useContext(appContext);
-  const icon =
-    ctx.theme.listIcons.filter((i) => i.id == item.icon)[0] ||
-    ctx.theme.listIcons[0];
-  const color =
-    ctx.theme.themeColors.filter((i) => i.id == item.theme_color)[0] ||
-    ctx.theme.themeColors[0];
+
   return (
-    <TouchableOpacity
-      onPress={() => onActivateList(item.id)}
-      style={[styles.item]}
-    >
-      <UrlIcon icon={icon} color={color.hex} size={32} />
+    <TouchableOpacity onPress={() => onActivate(item.id)} style={[styles.item]}>
+      <UrlIcon icon={item.icon} color={item.theme_color.hex} size={32} />
       <Text numberOfLines={1} style={styles.text}>
         {item.title}
       </Text>
@@ -41,12 +28,12 @@ const MyListsListItem = ({
         <IconButton
           style={styles.leave}
           icon={{ name: "edit", size: 17, color: "dodgerblue" }}
-          onPress={() => onEditList(item.id)}
+          onPress={() => onEdit(item.id)}
         />
         <IconButton
           style={styles.leave}
           icon={{ name: "delete", size: 18, color: Color.dangerRed }}
-          onPress={() => onDeleteList(item.id)}
+          onPress={() => onDelete(item.id)}
         />
       </View>
     </TouchableOpacity>

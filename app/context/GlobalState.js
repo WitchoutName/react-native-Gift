@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ToastAndroid } from "react-native";
+import { View, StyleSheet, ToastAndroid, Alert } from "react-native";
 
 import Context from "./appContext";
 import api from "./../services/api";
@@ -20,13 +20,23 @@ const GlobalState = ({ children }) => {
   const [listIcons, setListIcons] = useState([]);
   const [themeColors, setThemeColors] = useState([]);
 
-  const takeCareOfRequest = async ({ request, callback, error }) => {
-    setLoader(true);
+  const getFormatedList = (l) => ({
+    ...l,
+    theme_color: themeColors.filter((c) => c.id == l.theme_color)[0] || {
+      hex: "dodgerblue",
+    },
+    icon: listIcons.filter((i) => i.id == l.icon)[0] || {
+      image: null,
+    },
+  });
+
+  const takeCareOfRequest = async ({ request, callback, error, loading }) => {
+    loading && setLoader(true);
     const result = await request.method(
       ...(typeof request.params === Array ? request.params : [request.params])
     );
     const reasonPhrase = ReasonPhrases[StatusCodes[`${result.status}`]];
-    setLoader(false);
+    loading && setLoader(false);
     if (result.status >= 500) ToastAndroid.show("Server error", 1000);
     else if (result.status >= 400)
       result.data.errors ||
@@ -42,41 +52,78 @@ const GlobalState = ({ children }) => {
   };
 
   const listMethods = {
-    getLists: async () => {
-      await takeCareOfRequest({
+    getLists: async ({ loading }) => {
+      const res = await takeCareOfRequest({
         request: { method: api.list.getLists },
-        callback: async ({ data: l, ok }) => {
-          if (ok) setLists(l);
-        },
         error: "Failed to get lists",
+        loading,
       });
+      return res;
     },
-    getList: async (id) => {
+    getList: async (id, navigation) => {
       const { data, ok } = await takeCareOfRequest({
         request: {
           method: api.list.getList,
           params: id,
         },
+        callback: ({ data, ok }) => {
+          const formatedData = getFormatedList(data);
+          if (ok) navigation.navigate("List", formatedData);
+        },
         error: "Failed to get list",
       });
       return { list: data, ok };
     },
-    createList: async (list) => {
+    manageList: async (list) => {
+      const isEdit = lists.some((l) => l.id == list.id);
       const result = await takeCareOfRequest({
         request: {
-          method: api.list.createList,
+          method: isEdit ? api.list.putList : api.list.createList,
           params: list,
         },
         callback: ({ ok, data }) => {
-          if (ok) setLists([data, ...lists]);
+          if (ok) {
+            if (isEdit)
+              setLists(
+                lists.map((l) => (l.id == list.id ? getFormatedList(list) : l))
+              );
+            else setLists([getFormatedList(data), ...lists]);
+          }
         },
         error: "Failed to create list",
       });
       return result;
     },
+    deleteList: async (id) => {
+      const list = lists.filter((l) => l.id == id)[0];
+      Alert.alert(
+        "Dlelete list",
+        `Are you sure you want to premanently delete \"${list.title}\"?`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: () =>
+              takeCareOfRequest({
+                request: {
+                  method: api.list.deleteList,
+                  params: id,
+                },
+                callback: ({ ok }) => {
+                  if (ok) setLists(lists.filter((l) => l.id != list.id));
+                },
+                error: "Failed to get list",
+              }),
+          },
+        ]
+      );
+    },
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     api.http.setAuthToken("3e88cafbd977cf8585f9a8e01cca20b22586a7ba");
     api.auth.getUser().then(({ data, ok }) => {
       if (ok) setUser(data);
@@ -85,7 +132,7 @@ const GlobalState = ({ children }) => {
         ToastAndroid.show("Failed to get user information", 1000);
       }
     });
-    api.icon.getListIcons().then(({ data, ok }) => {
+    await api.icon.getListIcons().then(({ data, ok }) => {
       if (ok)
         setListIcons(
           data.map((i) => ({ ...i, image: api.icon.getIcon(i.image) }))
@@ -95,16 +142,22 @@ const GlobalState = ({ children }) => {
         ToastAndroid.show("Failed to load icons", 1000);
       }
     });
-    api.icon.getThemeColors().then(({ data, ok }) => {
+    await api.icon.getThemeColors().then(({ data, ok }) => {
       if (ok) setThemeColors(data);
       else {
         console.log(data);
         ToastAndroid.show("Failed to load icons", 1000);
       }
     });
-
-    listMethods.getLists();
   }, []);
+
+  useEffect(() => {
+    if (listIcons.length && themeColors.length) {
+      api.list.getLists().then(({ data, ok }) => {
+        if (ok) setLists(data.map((l) => getFormatedList(l)));
+      });
+    }
+  }, [listIcons, themeColors]);
 
   const context = {
     user,
