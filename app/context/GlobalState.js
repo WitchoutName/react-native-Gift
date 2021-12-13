@@ -68,7 +68,11 @@ const GlobalState = ({ children }) => {
         },
         callback: ({ data, ok }) => {
           const formatedData = getFormatedList(data);
-          if (ok) navigation.navigate("List", formatedData);
+          if (ok)
+            navigation.navigate("List", {
+              screen: "MyListItems",
+              params: formatedData,
+            });
         },
         error: "Failed to get list",
       });

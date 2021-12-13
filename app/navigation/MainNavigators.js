@@ -3,11 +3,38 @@ import {
   createStackNavigator,
   CardStyleInterpolators,
 } from "@react-navigation/stack";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 import Color from "../classes/Color";
 import MylistsScreen from "../screens/MyListsScreen";
 import Createlistscreen from "../screens/CreateListScreen";
 import ListScreen from "../screens/ListScreen";
+import MyListitemScreen from "../screens/MyListItemScreen";
+
+const MyListTab = createMaterialTopTabNavigator();
+
+export function MyListNavigator() {
+  return (
+    <MyListTab.Navigator>
+      <MyListTab.Screen
+        name="MyListItems"
+        component={MyListitemScreen}
+        options={({ route }) => {
+          console.log(route);
+          return {
+            title: route.params.title,
+            headerStyle: {
+              backgroundColor: route.params.theme_color.hex,
+              borderWidth: 0,
+            },
+            headerTransparent: true,
+          };
+        }}
+      />
+      <MyListTab.Screen name="People" component={MyListitemScreen} />
+    </MyListTab.Navigator>
+  );
+}
 
 const MyListsStack = createStackNavigator();
 
@@ -38,17 +65,18 @@ export const MyListsNavigator = () => (
     />
     <MyListsStack.Screen
       name="List"
-      component={ListScreen}
-      options={({ route }) => {
-        return {
-          title: route.params.title,
-          headerStyle: {
-            backgroundColor: route.params.theme_color.hex,
-            borderWidth: 0,
-          },
-          headerTransparent: true,
-        };
-      }}
+      component={MyListNavigator}
+      // options={({ route }) => {
+      //   console.log(route);
+      //   return {
+      //     title: route.params.title,
+      //     headerStyle: {
+      //       backgroundColor: route.params.theme_color.hex,
+      //       borderWidth: 0,
+      //     },
+      //     headerTransparent: true,
+      //   };
+      // }}
     />
   </MyListsStack.Navigator>
 );
