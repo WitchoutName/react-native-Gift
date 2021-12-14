@@ -68,6 +68,7 @@ const GlobalState = ({ children }) => {
         },
         callback: ({ data, ok }) => {
           const formatedData = getFormatedList(data);
+          setList(formatedData);
           if (ok)
             navigation.navigate("List", {
               screen: "MyListItems",

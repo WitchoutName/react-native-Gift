@@ -10,28 +10,40 @@ import MylistsScreen from "../screens/MyListsScreen";
 import Createlistscreen from "../screens/CreateListScreen";
 import ListScreen from "../screens/ListScreen";
 import MyListitemScreen from "../screens/MyListItemScreen";
+import Listscreenheadertitle from "../components/ListScreenHeaderTitle";
+import TabBarTop from "./ListScreenNavigatorBar";
+import Mylistpeoplescreen from "../screens/MyListPeopleScreen";
 
 const MyListTab = createMaterialTopTabNavigator();
 
 export function MyListNavigator() {
   return (
-    <MyListTab.Navigator>
+    <MyListTab.Navigator tabBar={(props) => <TabBarTop {...props} />}>
       <MyListTab.Screen
         name="MyListItems"
         component={MyListitemScreen}
         options={({ route }) => {
-          console.log(route);
           return {
-            title: route.params.title,
+            headerStyle: {
+              height: 65,
+            },
+            title: "Items",
             headerStyle: {
               backgroundColor: route.params.theme_color.hex,
-              borderWidth: 0,
             },
             headerTransparent: true,
+            tabBarIndicatorStyle: {
+              backgroundColor: route.params.theme_color.hex,
+            },
+            tabBarPressColor: route.params.theme_color.hex,
           };
         }}
       />
-      <MyListTab.Screen name="People" component={MyListitemScreen} />
+      <MyListTab.Screen
+        name="ListPeople"
+        component={Mylistpeoplescreen}
+        options={{ title: "People" }}
+      />
     </MyListTab.Navigator>
   );
 }
@@ -66,17 +78,19 @@ export const MyListsNavigator = () => (
     <MyListsStack.Screen
       name="List"
       component={MyListNavigator}
-      // options={({ route }) => {
-      //   console.log(route);
-      //   return {
-      //     title: route.params.title,
-      //     headerStyle: {
-      //       backgroundColor: route.params.theme_color.hex,
-      //       borderWidth: 0,
-      //     },
-      //     headerTransparent: true,
-      //   };
-      // }}
+      options={({ route }) => {
+        return {
+          title: route.params.params.title,
+          headerStyle: {
+            backgroundColor: route.params.params.theme_color.hex,
+            height: 75,
+          },
+          headerTitle: () => (
+            <Listscreenheadertitle list={route.params.params} />
+          ),
+        };
+      }}
+      // options={{}}
     />
   </MyListsStack.Navigator>
 );

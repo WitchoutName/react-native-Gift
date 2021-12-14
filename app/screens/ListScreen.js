@@ -6,10 +6,11 @@ import UrlIcon from "./../components/UrlIcon";
 
 const ListScreen = ({ children, route }) => {
   if (route) {
-    console.log("listparams: ", route.params);
+    //console.log("listparams: ", route.params);
     const list = route.params || null;
     return (
-      list && (
+      !null ||
+      (list && (
         <Screen>
           <View
             style={{
@@ -31,7 +32,7 @@ const ListScreen = ({ children, route }) => {
             {children}
           </View>
         </Screen>
-      )
+      ))
     );
   }
 };
