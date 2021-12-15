@@ -27,12 +27,12 @@ const MyListsListItem = ({ item, onActivate, onDelete, onEdit }) => {
       <View style={styles.btnGroup}>
         <IconButton
           style={styles.leave}
-          icon={{ name: "edit", size: 17, color: "dodgerblue" }}
+          icon={{ name: "edit", size: 30, color: "dodgerblue" }}
           onPress={() => onEdit(item.id)}
         />
         <IconButton
           style={styles.leave}
-          icon={{ name: "delete", size: 18, color: Color.dangerRed }}
+          icon={{ name: "delete", size: 30, color: Color.dangerRed }}
           onPress={() => onDelete(item.id)}
         />
       </View>

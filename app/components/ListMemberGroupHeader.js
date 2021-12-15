@@ -1,11 +1,18 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
+import { Button } from "react-native-paper";
 import Color from "../classes/Color";
+import IconButton from "./common/IconButton";
 
-const Listmembergroupheader = ({ title }) => {
+const Listmembergroupheader = ({ group }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{title}</Text>
+      <Text style={styles.text}>{group.title}</Text>
+      {group.add && (
+        <Button color={Color.successGreen} compact={true} onPress={group.add}>
+          Add
+        </Button>
+      )}
     </View>
   );
 };
@@ -13,7 +20,9 @@ const Listmembergroupheader = ({ title }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    padding: 15,
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
     marginLeft: "2.5%",
     width: "95%",
     borderColor: Color.darkGray,

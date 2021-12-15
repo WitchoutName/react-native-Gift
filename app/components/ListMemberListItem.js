@@ -4,6 +4,9 @@ import { List, Avatar } from "react-native-paper";
 
 import IconButton from "./common/IconButton";
 import Color from "../classes/Color";
+import { getUserImage } from "./../services/userService";
+import Userimage from "./common/UserImage";
+import { Button } from "react-native-paper";
 
 const Listmemberlistitem = ({ item, isKickable }) => {
   return (
@@ -11,24 +14,16 @@ const Listmemberlistitem = ({ item, isKickable }) => {
       key={item.id}
       title={item.username}
       description={item.email}
-      left={() => (
-        <Avatar.Image
-          size={60}
-          source={() => (
-            <Image
-              style={{ width: 60, height: 60, borderRadius: 30 }}
-              source={{ uri: item.image }}
-            />
-          )}
-        />
-      )}
+      left={() => <Userimage user={item} />}
       right={() =>
         isKickable && (
-          <IconButton
-            style={styles.leave}
-            icon={{ name: "delete", size: 23, color: Color.dangerRed }}
-            onPress={() => onEdit(item.id)}
-          />
+          <Button
+            color={Color.dangerRed}
+            compact={true}
+            onPress={() => console.log("Pressed")}
+          >
+            Kick
+          </Button>
         )
       }
     />

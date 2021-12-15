@@ -2,13 +2,11 @@ import Color from "../classes/Color";
 
 export const getUserImage = (user) => {
   if (!user.username) return null;
-  let color = Color.getProfileBg(user);
   return user.image_url
     ? user.image_url
-    : `https://eu.ui-avatars.com/api/?background=${color.slice(
-        1,
-        color.length
-      )}&color=fff&name=${user.username}&size=150`;
+    : `https://avatars.dicebear.com/api/bottts/${
+        user.email + user.username
+      }.png?translateY=-7`;
 };
 
 export const getUserName = (user) => {

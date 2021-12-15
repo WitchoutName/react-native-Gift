@@ -14,7 +14,8 @@ import Listslistbutton from "../components/ListsListButton";
 import MyListsListItem from "../components/MyListsListItem";
 import MyListsListEmptyComponent from "../components/MyListsListEmptyComponent";
 
-const MylistsScreen = ({ route, navigation }) => {
+const ListsScreen = ({ route, navigation }) => {
+  const mode = route.name === "My Lists" ? "my" : "others";
   const ctx = useContext(appContext);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -54,7 +55,11 @@ const MylistsScreen = ({ route, navigation }) => {
       >
         <Listslist
           renderItem={renderItem}
-          data={ctx.lists}
+          data={ctx.lists.filter((l) => {
+            const isMyList = l.creator == ctx.user.id;
+            // console.log(route.name, isMyList, l.creator);
+            return (mode === "my") === isMyList;
+          })}
           ListEmptyComponent={MyListsListEmptyComponent}
         />
         <Listslistbutton
@@ -68,4 +73,4 @@ const MylistsScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({});
 
-export default MylistsScreen;
+export default ListsScreen;

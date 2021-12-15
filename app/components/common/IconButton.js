@@ -15,15 +15,16 @@ const IconButton = (props) => {
         ...props.style,
         ...{
           borderColor: props.icon.color,
-          // height: props.size,
-          // width: props.size,
+          borderWidth: props.icon.size * 0.075,
+          height: props.icon.size,
+          width: props.icon.size,
         },
       }}
     >
       <ComposeIcon
         name={props.icon.name}
         color={props.icon.color}
-        size={props.icon.size}
+        size={props.icon.size * 0.7}
       />
     </TouchableOpacity>
   );

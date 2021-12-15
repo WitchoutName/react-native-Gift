@@ -61,6 +61,8 @@ const GlobalState = ({ children }) => {
       return res;
     },
     getList: async (id, navigation) => {
+      const isMine = lists.filter((l) => l.id == id)[0].creator == user.id;
+      console.log(lists.filter((l) => l.id == id)[0].creator);
       const { data, ok } = await takeCareOfRequest({
         request: {
           method: api.list.getList,
@@ -70,7 +72,7 @@ const GlobalState = ({ children }) => {
           const formatedData = getFormatedList(data);
           setList(formatedData);
           if (ok)
-            navigation.navigate("List", {
+            navigation.navigate(isMine ? "MyList" : "OthersList", {
               screen: "MyListItems",
               params: formatedData,
             });
