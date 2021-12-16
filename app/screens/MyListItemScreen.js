@@ -6,8 +6,10 @@ import Owneritemlistitem from "../components/OwnerItemListItem";
 import appContext from "../context/appContext";
 import ListScreen from "./ListScreen";
 
-const MyListitemScreen = () => {
-  const list = useContext(appContext).list;
+const MyListitemScreen = ({ route }) => {
+  // console.log(route.params);
+  const { currentLists } = useContext(appContext);
+  const list = currentLists[currentLists.active];
   const renderItem = (item) => <Owneritemlistitem item={item.item} />;
   return (
     <Screen>

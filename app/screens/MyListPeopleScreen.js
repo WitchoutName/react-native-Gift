@@ -7,7 +7,7 @@ import Screen from "../components/common/Screen";
 import Listmembergroupheader from "../components/ListMemberGroupHeader";
 import Listmemberlistitem from "../components/ListMemberListItem";
 
-const getFormatedPeople = (list) => {
+const getFormatedPeople = (list, user) => {
   const people = [
     {
       title: "Members",
@@ -15,6 +15,7 @@ const getFormatedPeople = (list) => {
         (m) => !list.admins.map((a) => a.id).includes(m.id)
       ),
       add: () => {},
+      clickable: list.admins.map((a) => a.id).includes(user.id),
     },
     {
       title: "Owner",
@@ -24,14 +25,16 @@ const getFormatedPeople = (list) => {
       title: "Coowners",
       set: list.admins.filter((a) => a.id != list.creator),
       add: () => {},
+      clickable: list.creator == user.id,
     },
   ];
   return [people[1], people[2], people[0]];
 };
 
 const Mylistpeoplescreen = () => {
-  const { list, user } = useContext(appContext);
-  const people = getFormatedPeople(list);
+  const { currentLists, user } = useContext(appContext);
+  const list = currentLists[currentLists.active];
+  const people = getFormatedPeople(list, user);
 
   return (
     <Screen style={styles.container}>

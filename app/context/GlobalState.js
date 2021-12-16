@@ -14,7 +14,11 @@ const GlobalState = ({ children }) => {
     image_url: "image_user",
     google_login: false,
   });
-  const [list, setList] = useState([]);
+  const [currentLists, setCurrentLists] = useState({
+    my: {},
+    others: {},
+    active: "my",
+  });
   const [lists, setLists] = useState([]);
   const [loader, setLoader] = useState(false);
   const [listIcons, setListIcons] = useState([]);
@@ -62,7 +66,6 @@ const GlobalState = ({ children }) => {
     },
     getList: async (id, navigation) => {
       const isMine = lists.filter((l) => l.id == id)[0].creator == user.id;
-      console.log(lists.filter((l) => l.id == id)[0].creator);
       const { data, ok } = await takeCareOfRequest({
         request: {
           method: api.list.getList,
@@ -70,17 +73,28 @@ const GlobalState = ({ children }) => {
         },
         callback: ({ data, ok }) => {
           const formatedData = getFormatedList(data);
-          setList(formatedData);
+          setCurrentLists({
+            ...currentLists,
+            [isMine ? "my" : "others"]: formatedData,
+          });
           if (ok)
-            navigation.navigate(isMine ? "MyList" : "OthersList", {
-              screen: "MyListItems",
+            navigation.navigate(
+              isMine ? "MyList" : "OthersList",
+              { ...formatedData } /*{
+              // screen: "MyListItems",
               params: formatedData,
-            });
+            }*/
+            );
         },
         error: "Failed to get list",
       });
       return { list: data, ok };
     },
+    setActiveListType: (listType) =>
+      setCurrentLists({
+        ...currentLists,
+        active: listType,
+      }),
     manageList: async (list) => {
       const isEdit = lists.some((l) => l.id == list.id);
       const result = await takeCareOfRequest({
@@ -169,7 +183,7 @@ const GlobalState = ({ children }) => {
   const context = {
     user,
     lists,
-    list,
+    currentLists,
     loader: {
       get: loader,
       set: setLoader,

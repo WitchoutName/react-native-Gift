@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import { useKeyboard } from "@react-native-community/hooks";
 
 import ComposeIcon from "../components/common/ComposeIcon";
 import Color from "../classes/Color";
+import appContext from "../context/appContext";
 
 const BottomIcon = ({ icon, color }) => (
   <View style={styles.bottomIcon}>{icon(color)}</View>
@@ -27,7 +28,7 @@ const tabIcons = [
 });
 
 export default function AppNavigatorBar({ state, descriptors, navigation }) {
-  const [active, setActive] = useState(true);
+  const { listMethods } = useContext(appContext);
   const keyboard = useKeyboard();
 
   // useEffect(() => {
@@ -58,6 +59,15 @@ export default function AppNavigatorBar({ state, descriptors, navigation }) {
               target: route.key,
               canPreventDefault: true,
             });
+
+            switch (index) {
+              case 0:
+                listMethods.setActiveListType("my");
+                break;
+              case 1:
+                listMethods.setActiveListType("others");
+                break;
+            }
 
             if (!isFocused && !event.defaultPrevented) {
               // The `merge: true` option makes sure that the params inside the tab screen are preserved

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   createStackNavigator,
   CardStyleInterpolators,
@@ -13,43 +13,54 @@ import MyListitemScreen from "../screens/MyListItemScreen";
 import Listscreenheadertitle from "../components/ListScreenHeaderTitle";
 import TabBarTop from "./ListScreenNavigatorBar";
 import Mylistpeoplescreen from "../screens/MyListPeopleScreen";
+import appContext from "../context/appContext";
+import CatalogScreen from "./../screens/CatalogScreen";
 
 const MyListTab = createMaterialTopTabNavigator();
 
-export function MyListNavigator(screenName) {
-  function Nav() {
-    return (
-      <MyListTab.Navigator tabBar={(props) => <TabBarTop {...props} />}>
-        <MyListTab.Screen
-          name={screenName}
-          component={MyListitemScreen}
-          options={({ route }) => {
-            return {
-              headerStyle: {
-                height: 65,
-              },
-              title: "Items",
-              headerStyle: {
-                backgroundColor: route.params.theme_color.hex,
-              },
-              headerTransparent: true,
-              tabBarIndicatorStyle: {
-                backgroundColor: route.params.theme_color.hex,
-              },
-              tabBarPressColor: route.params.theme_color.hex,
-            };
-          }}
-        />
-        <MyListTab.Screen
-          name="ListPeople"
-          component={Mylistpeoplescreen}
-          options={{ title: "People" }}
-        />
-      </MyListTab.Navigator>
-    );
-  }
-  return Nav;
-}
+const Temp = () => <></>;
+
+export const MyListNavigator = () => {
+  const { currentLists } = useContext(appContext);
+  const list = currentLists[currentLists.active];
+  const listColor = list.theme_color ? list.theme_color.hex : "dodgerblue";
+  // console.log(list);
+  return (
+    <MyListTab.Navigator tabBar={(props) => <TabBarTop {...props} />}>
+      {list.id ? (
+        <>
+          <MyListTab.Screen
+            name="MyListItems"
+            component={MyListitemScreen}
+            options={({ route }) => {
+              return {
+                headerStyle: {
+                  height: 65,
+                },
+                title: "Items",
+                headerStyle: {
+                  backgroundColor: listColor,
+                },
+                headerTransparent: true,
+                tabBarIndicatorStyle: {
+                  backgroundColor: listColor,
+                },
+                tabBarPressColor: listColor,
+              };
+            }}
+          />
+          <MyListTab.Screen
+            name="ListPeople"
+            component={Mylistpeoplescreen}
+            options={{ title: "People" }}
+          />
+        </>
+      ) : (
+        <MyListTab.Screen name="temp" component={Temp} />
+      )}
+    </MyListTab.Navigator>
+  );
+};
 
 const MyListsStack = createStackNavigator();
 const OthersListsStack = createStackNavigator();
@@ -73,13 +84,14 @@ const listsStackProps = {
 
 const listScreenProps = {
   options: ({ route }) => {
+    // console.log(route.params);
     return {
-      title: route.params.params.title,
+      title: route.params.title,
       headerStyle: {
-        backgroundColor: route.params.params.theme_color.hex,
+        backgroundColor: route.params.theme_color.hex,
         height: 75,
       },
-      headerTitle: () => <Listscreenheadertitle list={route.params.params} />,
+      headerTitle: () => <Listscreenheadertitle list={route.params} />,
     };
   },
 };
@@ -99,7 +111,7 @@ export const MyListsNavigator = () => (
     <MyListsStack.Screen
       {...listScreenProps}
       name="MyList"
-      component={MyListNavigator("MyListItems")}
+      component={MyListNavigator}
     />
   </MyListsStack.Navigator>
 );
@@ -111,7 +123,7 @@ export const OthersListsNavigator = () => (
     <OthersListsStack.Screen
       {...listScreenProps}
       name="OthersList"
-      component={MyListNavigator("OthersListItems")}
+      component={MyListNavigator}
     />
   </OthersListsStack.Navigator>
 );

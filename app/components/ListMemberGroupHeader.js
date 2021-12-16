@@ -8,7 +8,7 @@ const Listmembergroupheader = ({ group }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{group.title}</Text>
-      {group.add && (
+      {group.add && (group.clickable == undefined || group.clickable) && (
         <Button color={Color.successGreen} compact={true} onPress={group.add}>
           Add
         </Button>
