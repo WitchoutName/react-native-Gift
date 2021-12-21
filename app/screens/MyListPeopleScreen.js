@@ -20,24 +20,31 @@ const Mylistpeoplescreen = ({ navigation }) => {
   const { user, listMethods, loader } = useContext(appContext);
   const list = useList();
   const invited = getInvited(list);
+  function inviteFunction({ type, title }) {
+    return async () => {
+      navigation.navigate("inviteToList", {
+        onInvite: async (listUser) => {
+          let res = true;
+          loader.set(true);
+          const { ok } = await listMethods.inviteUser(list, listUser, type);
+          if (ok) await listMethods.getList(list.id);
+          else res = false;
+          loader.set(false);
+          return res;
+        },
+        type,
+        title,
+      });
+    };
+  }
+
   let people = [
     {
       title: ["Members", "M"],
       set: list.members.filter(
         (m) => !list.admins.map((a) => a.id).includes(m.id)
       ),
-      add: () => {
-        navigation.navigate("inviteToList", {
-          onInvite: async (listUser) => {
-            loader.set(true);
-            await listMethods.inviteUser(list, listUser, "M");
-            await listMethods.getList(list.id);
-            loader.set(false);
-            navigation.goBack();
-          },
-          title: "Invite a member",
-        });
-      },
+      add: inviteFunction({ type: "M", title: "Invite a member" }),
       clickable: list.admins.map((a) => a.id).includes(user.id),
     },
     {
@@ -47,7 +54,7 @@ const Mylistpeoplescreen = ({ navigation }) => {
     {
       title: ["Coowners", "A"],
       set: list.admins.filter((a) => a.id != list.creator),
-      add: () => {},
+      add: inviteFunction({ type: "A", title: "Invite a coowner" }),
       clickable: list.creator == user.id,
     },
   ];
@@ -84,8 +91,6 @@ const Mylistpeoplescreen = ({ navigation }) => {
           </Button>
         );
   }
-
-  const addMember = (config) => {};
 
   return (
     <Screen style={styles.container}>

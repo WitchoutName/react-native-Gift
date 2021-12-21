@@ -49,7 +49,6 @@ const GlobalState = ({ children }) => {
     );
     const reasonPhrase = ReasonPhrases[StatusCodes[`${result.status}`]];
     loading && setLoader(false);
-    console.log(result.data);
     if (result.status >= 500) ToastAndroid.show("Server error", 1000);
     else if (result.status >= 400)
       result.data.errors ||
@@ -138,7 +137,7 @@ const GlobalState = ({ children }) => {
       return result;
     },
     inviteUser: async (llist, listUser, member_type) => {
-      takeCareOfRequest({
+      return await takeCareOfRequest({
         request: {
           method: api.member.inviteUser,
           params: [llist.id, listUser.id, member_type],
