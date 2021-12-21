@@ -7,7 +7,7 @@ import IconButton from "./common/IconButton";
 const Listmembergroupheader = ({ group }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{group.title}</Text>
+      <Text style={styles.text}>{group.title[0]}</Text>
       {group.add && (group.clickable == undefined || group.clickable) && (
         <Button color={Color.successGreen} compact={true} onPress={group.add}>
           Add

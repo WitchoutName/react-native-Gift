@@ -6,7 +6,7 @@ import appContext from "../../context/appContext";
 const screenWidth = Dimensions.get("window").width;
 
 const Screen = (props) => {
-  const ctx = useContext(appContext);
+  //const ctx = useContext(appContext);
 
   return (
     <View style={{ ...styles.container, ...props.style }}>

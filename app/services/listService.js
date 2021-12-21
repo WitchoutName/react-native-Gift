@@ -25,6 +25,10 @@ export async function getLists() {
   const response = await api.client.get(gListUrl);
   return response;
 }
+export async function getUsers() {
+  const response = await api.client.get("api/users/");
+  return response;
+}
 
 export async function getList(id) {
   const response = await api.client.get(`${gListUrl}${id}/`);
@@ -59,6 +63,7 @@ export async function deleteList(id) {
 
 export default {
   getLists,
+  getUsers,
   getList,
   createList,
   putList,

@@ -15,16 +15,20 @@ import TabBarTop from "./ListScreenNavigatorBar";
 import Mylistpeoplescreen from "../screens/MyListPeopleScreen";
 import appContext from "../context/appContext";
 import CatalogScreen from "./../screens/CatalogScreen";
+import Listinvitescreen from "../screens/ListInviteScreen";
+import useList from "../hooks/useList";
 
 const MyListTab = createMaterialTopTabNavigator();
 
 const Temp = () => <></>;
 
+function getListColor(list) {
+  return list.theme_color ? list.theme_color.hex : "dodgerblue";
+}
+
 export const MyListNavigator = () => {
-  const { currentLists } = useContext(appContext);
-  const list = currentLists[currentLists.active];
-  const listColor = list.theme_color ? list.theme_color.hex : "dodgerblue";
-  // console.log(list);
+  const list = useList();
+  const listColor = getListColor(list);
   return (
     <MyListTab.Navigator tabBar={(props) => <TabBarTop {...props} />}>
       {list.id ? (
@@ -104,22 +108,43 @@ const manageListScreenProps = {
   }),
 };
 
-export const MyListsNavigator = () => (
-  <MyListsStack.Navigator {...listsStackProps}>
-    <MyListsStack.Screen name="My Lists" component={ListsScreen} />
-    <MyListsStack.Screen {...manageListScreenProps} />
-    <MyListsStack.Screen
-      {...listScreenProps}
-      name="MyList"
-      component={MyListNavigator}
-    />
-  </MyListsStack.Navigator>
-);
+const inviteListScreenProps = (list) => {
+  return {
+    name: "inviteToList",
+    component: Listinvitescreen,
+    options: () => {
+      return {
+        title: list.title,
+        headerStyle: {
+          backgroundColor: getListColor(list),
+          height: 75,
+        },
+      };
+    },
+  };
+};
+
+export const MyListsNavigator = () => {
+  const list = useList();
+  return (
+    <MyListsStack.Navigator {...listsStackProps}>
+      <MyListsStack.Screen name="My Lists" component={ListsScreen} />
+      <MyListsStack.Screen {...manageListScreenProps} />
+      <MyListsStack.Screen {...inviteListScreenProps(list)} />
+      <MyListsStack.Screen
+        {...listScreenProps}
+        name="MyList"
+        component={MyListNavigator}
+      />
+    </MyListsStack.Navigator>
+  );
+};
 
 export const OthersListsNavigator = () => (
   <OthersListsStack.Navigator {...listsStackProps}>
     <OthersListsStack.Screen name="Others Lists" component={ListsScreen} />
     <OthersListsStack.Screen {...manageListScreenProps} />
+    <MyListsStack.Screen name="inviteToList" component={Listinvitescreen} />
     <OthersListsStack.Screen
       {...listScreenProps}
       name="OthersList"

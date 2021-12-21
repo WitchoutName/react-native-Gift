@@ -16,18 +16,23 @@ import MyListsListEmptyComponent from "../components/MyListsListEmptyComponent";
 
 const ListsScreen = ({ route, navigation }) => {
   const mode = route.name === "My Lists" ? "my" : "others";
-  const ctx = useContext(appContext);
+  const { user, listMethods, lists } = useContext(appContext);
   const [refreshing, setRefreshing] = useState(false);
 
   const handleActivate = async (id) => {
-    ctx.listMethods.getList(id, navigation);
+    listMethods.getList(id).then(({ ok, data, isMine }) => {
+      if (ok)
+        navigation.navigate(isMine ? "MyList" : "OthersList", {
+          ...listMethods.getFormatedList(data),
+        });
+    });
   };
 
   const handleEdit = (id) => {
     navigation.navigate("manageList", { mode: "edit", id });
   };
   const handleDelete = (id) => {
-    ctx.listMethods.deleteList(id);
+    listMethods.deleteList(id);
   };
 
   const renderItem = ({ item, index }) => {
@@ -49,14 +54,14 @@ const ListsScreen = ({ route, navigation }) => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => ctx.listMethods.getLists({ loader: false })}
+            onRefresh={() => listMethods.getLists({ loader: false })}
           />
         }
       >
         <Listslist
           renderItem={renderItem}
-          data={ctx.lists.filter((l) => {
-            const isMyList = l.creator == ctx.user.id;
+          data={lists.filter((l) => {
+            const isMyList = l.creator == user.id;
             // console.log(route.name, isMyList, l.creator);
             return (mode === "my") === isMyList;
           })}

@@ -4,9 +4,9 @@ export const getUserImage = (user) => {
   if (!user.username) return null;
   return user.image_url
     ? user.image_url
-    : `https://avatars.dicebear.com/api/bottts/${
+    : `https://avatars.dicebear.com/api/jdenticon/${
         user.email + user.username
-      }.png?translateY=-7`;
+      }.png`;
 };
 
 export const getUserName = (user) => {

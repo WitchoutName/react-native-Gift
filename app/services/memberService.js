@@ -1,22 +1,31 @@
 import api from "./httpService";
 
-const memberUrl = "api/user/glist/";
+const memberUrl = "api/gift-list/";
 
-export async function kickMember(listId, memberId) {
-  const response = await api.client.put(
-    `${memberUrl}${listId}/member/${memberId}/`
+export async function inviteUser(listId, memberId, member_type) {
+  const response = await api.client.post(
+    `${memberUrl}${listId}/manage-member/${memberId}/`,
+    { member_type }
   );
   return response;
 }
 
-export async function banMember(listId, memberId) {
+export async function cancelInvite(listId, memberId) {
+  const response = await api.client.put(
+    `${memberUrl}${listId}/manage-member/${memberId}/`
+  );
+  return response;
+}
+
+export async function kickUser(listId, memberId) {
   const response = await api.client.delete(
-    `${memberUrl}${listId}/member/${memberId}/`
+    `${memberUrl}${listId}/manage-member/${memberId}/`
   );
   return response;
 }
 
 export default {
-  kickMember,
-  banMember,
+  cancelInvite,
+  kickUser,
+  inviteUser,
 };

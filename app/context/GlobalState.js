@@ -34,25 +34,48 @@ const GlobalState = ({ children }) => {
     },
   });
 
-  const takeCareOfRequest = async ({ request, callback, error, loading }) => {
+  const takeCareOfRequest = async ({
+    request,
+    callback,
+    error,
+    loading = true,
+  }) => {
     loading && setLoader(true);
+    // console.log(request.params, request.params.constructor == Array);
     const result = await request.method(
-      ...(typeof request.params === Array ? request.params : [request.params])
+      ...(request.params && request.params.constructor === Array
+        ? request.params
+        : [request.params])
     );
     const reasonPhrase = ReasonPhrases[StatusCodes[`${result.status}`]];
     loading && setLoader(false);
+    console.log(result.data);
     if (result.status >= 500) ToastAndroid.show("Server error", 1000);
     else if (result.status >= 400)
       result.data.errors ||
         ToastAndroid.show(
-          typeof result.data === Object
+          result.data.constructor === Object
             ? result.data.error || reasonPhrase
             : result.data || reasonPhrase,
           1000
         );
-    if (!result.ok) ToastAndroid.show(error, 1000);
+    //if (!result.ok) ToastAndroid.show(error, 1000);
     callback && callback(result);
     return result;
+  };
+
+  const setList = (list) => {
+    if (
+      list.theme_color.constructor === Number ||
+      list.icon.constructor === Number
+    )
+      list = getFormatedList();
+
+    const isMine = lists.filter((l) => l.id == list.id)[0].creator == user.id;
+    setCurrentLists({
+      ...currentLists,
+      [isMine ? "my" : "others"]: list,
+    });
   };
 
   const listMethods = {
@@ -64,7 +87,14 @@ const GlobalState = ({ children }) => {
       });
       return res;
     },
-    getList: async (id, navigation) => {
+    getUsers: async () => {
+      const res = await takeCareOfRequest({
+        request: { method: api.list.getUsers },
+        error: "Failed to load users",
+      });
+      return res;
+    },
+    getList: async (id, loading = true) => {
       const isMine = lists.filter((l) => l.id == id)[0].creator == user.id;
       const { data, ok } = await takeCareOfRequest({
         request: {
@@ -73,28 +103,20 @@ const GlobalState = ({ children }) => {
         },
         callback: ({ data, ok }) => {
           const formatedData = getFormatedList(data);
-          setCurrentLists({
-            ...currentLists,
-            [isMine ? "my" : "others"]: formatedData,
-          });
-          if (ok)
-            navigation.navigate(
-              isMine ? "MyList" : "OthersList",
-              { ...formatedData } /*{
-              // screen: "MyListItems",
-              params: formatedData,
-            }*/
-            );
+          setList(formatedData);
         },
         error: "Failed to get list",
+        loading,
       });
-      return { list: data, ok };
+      return { data, ok, isMine };
     },
+    getFormatedList,
     setActiveListType: (listType) =>
       setCurrentLists({
         ...currentLists,
         active: listType,
       }),
+    setList,
     manageList: async (list) => {
       const isEdit = lists.some((l) => l.id == list.id);
       const result = await takeCareOfRequest({
@@ -114,6 +136,75 @@ const GlobalState = ({ children }) => {
         error: "Failed to create list",
       });
       return result;
+    },
+    inviteUser: async (llist, listUser, member_type) => {
+      takeCareOfRequest({
+        request: {
+          method: api.member.inviteUser,
+          params: [llist.id, listUser.id, member_type],
+          loading: false,
+        },
+        error: `Failed to invite \"${listUser.username}\"`,
+      });
+    },
+    cancelInvite: async (llist, listUser) => {
+      takeCareOfRequest({
+        request: {
+          method: api.member.cancelInvite,
+          params: [llist.id, listUser.id],
+        },
+        callback: ({ ok }) => {
+          const newList = {
+            ...llist,
+            listinvite_set: llist.listinvite_set.filter(
+              (m) => m.user.id != listUser.id
+            ),
+          };
+
+          if (ok)
+            setCurrentLists({
+              ...currentLists,
+              [currentLists.active]: newList,
+            });
+        },
+        error: `Failed to cancel \"${listUser.username}\"s invite`,
+      });
+    },
+    kickUser: async (llist, listUser) => {
+      Alert.alert(
+        "Kick",
+        `Are you sure you want to kick \"${listUser.username}\" from \"${llist.title}\"?`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: () =>
+              takeCareOfRequest({
+                request: {
+                  method: api.member.kickUser,
+                  params: [llist.id, listUser.id],
+                },
+                callback: ({ ok }) => {
+                  const newList = {
+                    ...llist,
+                    members: llist.members.filter((m) => m.id != listUser.id),
+                    admins: llist.admins.filter((m) => m.id != listUser.id),
+                  };
+
+                  if (ok)
+                    setCurrentLists({
+                      ...currentLists,
+                      [currentLists.active]: newList,
+                    });
+                },
+                error: `Failed to kick \"${listUser.username}\" from \"${llist.title}\"`,
+              }),
+          },
+        ]
+      );
     },
     deleteList: async (id) => {
       const list = lists.filter((l) => l.id == id)[0];
@@ -149,7 +240,7 @@ const GlobalState = ({ children }) => {
     api.auth.getUser().then(({ data, ok }) => {
       if (ok) setUser(data);
       else {
-        console.log(data);
+        console.log(data, ok);
         ToastAndroid.show("Failed to get user information", 1000);
       }
     });
