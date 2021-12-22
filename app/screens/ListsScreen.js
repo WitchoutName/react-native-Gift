@@ -13,11 +13,17 @@ import Listslist from "../components/ListsList";
 import Listslistbutton from "../components/ListsListButton";
 import MyListsListItem from "../components/MyListsListItem";
 import MyListsListEmptyComponent from "../components/MyListsListEmptyComponent";
+import Listmembergroupheader from "./../components/ListMemberGroupHeader";
 
 const ListsScreen = ({ route, navigation }) => {
   const mode = route.name === "My Lists" ? "my" : "others";
   const { user, listMethods, lists } = useContext(appContext);
   const [refreshing, setRefreshing] = useState(false);
+  const currentLists = lists.filter((l) => {
+    const isMyList = l.creator == user.id;
+    // console.log(route.name, isMyList, l.creator);
+    return (mode === "my") === isMyList;
+  });
 
   const handleActivate = async (id) => {
     listMethods.getList(id).then(({ ok, data, isMine }) => {
@@ -58,19 +64,36 @@ const ListsScreen = ({ route, navigation }) => {
           />
         }
       >
-        <Listslist
-          renderItem={renderItem}
-          data={lists.filter((l) => {
-            const isMyList = l.creator == user.id;
-            // console.log(route.name, isMyList, l.creator);
-            return (mode === "my") === isMyList;
-          })}
-          ListEmptyComponent={MyListsListEmptyComponent}
-        />
-        <Listslistbutton
-          title="Create List"
-          onPress={() => navigation.navigate("manageList", { mode: "create" })}
-        />
+        {mode == "my" ? (
+          <>
+            <Listslist
+              renderItem={renderItem}
+              data={currentLists}
+              ListEmptyComponent={MyListsListEmptyComponent}
+            />
+            <Listslistbutton
+              title="Create List"
+              onPress={() =>
+                navigation.navigate("manageList", { mode: "create" })
+              }
+            />
+          </>
+        ) : (
+          ["Coowner", "Member"].map((t) => {
+            const myLists = currentLists.filter(
+              (l) =>
+                l.admins.map((a) => a.id).includes(user.id) == (t == "Coowner")
+            );
+            return (
+              !!myLists.length && (
+                <React.Fragment key={t}>
+                  <Listmembergroupheader group={{ title: [t] }} />
+                  <Listslist renderItem={renderItem} data={myLists} />
+                </React.Fragment>
+              )
+            );
+          })
+        )}
       </ScrollView>
     </Screen>
   );

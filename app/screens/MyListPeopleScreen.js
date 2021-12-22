@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, Alert } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { List, Button } from "react-native-paper";
 
 import Color from "../classes/Color";
@@ -94,28 +94,30 @@ const Mylistpeoplescreen = ({ navigation }) => {
 
   return (
     <Screen style={styles.container}>
-      {people.map((group) => (
-        <React.Fragment key={group.title[0]}>
-          <Listmembergroupheader group={group} />
-          <List.Section style={{ width: "95%", marginHorizontal: "2.5%" }}>
-            {group.set.map((item) => (
-              <Listmemberlistitem
-                key={item.id}
-                item={item}
-                right={getRight(item, true)}
-              />
-            ))}
-            {invited[group.title[1]].map((item) => (
-              <Listmemberlistitem
-                key={item.user.id}
-                style={{ backgroundColor: Color.lightGray }}
-                item={item.user}
-                right={getRight(item.user, false)}
-              />
-            ))}
-          </List.Section>
-        </React.Fragment>
-      ))}
+      <ScrollView>
+        {people.map((group) => (
+          <React.Fragment key={group.title[0]}>
+            <Listmembergroupheader group={group} />
+            <List.Section style={{ width: "95%", marginHorizontal: "2.5%" }}>
+              {group.set.map((item) => (
+                <Listmemberlistitem
+                  key={item.id}
+                  item={item}
+                  right={getRight(item, true)}
+                />
+              ))}
+              {invited[group.title[1]].map((item) => (
+                <Listmemberlistitem
+                  key={item.user.id}
+                  style={{ backgroundColor: Color.lightGray }}
+                  item={item.user}
+                  right={getRight(item.user, false)}
+                />
+              ))}
+            </List.Section>
+          </React.Fragment>
+        ))}
+      </ScrollView>
     </Screen>
   );
 };

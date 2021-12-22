@@ -69,7 +69,7 @@ const GlobalState = ({ children }) => {
       list.icon.constructor === Number
     )
       list = getFormatedList();
-
+    // console.log(list);
     const isMine = lists.filter((l) => l.id == list.id)[0].creator == user.id;
     setCurrentLists({
       ...currentLists,
